@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "gripX",
+    "slug": "gripx",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#08080A",
+    "splash": {
+      "backgroundColor": "#08080A",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.gripx.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "gripX needs microphone access to record voice notes",
+        "NSSpeechRecognitionUsageDescription": "gripX uses speech recognition to transcribe your voice"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#08080A"
+      },
+      "package": "com.gripx.app",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.INTERNET",
+        "android.permission.VIBRATE"
+      ]
+    },
+    "plugins": [
+      "expo-font",
+      ["expo-av", { "microphonePermission": "gripX needs mic to record your voice" }],
+      "expo-secure-store"
+    ]
+  }
+}

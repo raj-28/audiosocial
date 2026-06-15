@@ -295,30 +295,11 @@ export default function CreateScreen({ onPost, onClose }) {
         return;
       }
 
-      // Try to transcribe
-      setTranscribing(true);
-      setStep('transcribing');
-
-      const result = await transcribeAudio(uri, lang);
-
-      setTranscribing(false);
-
-      if (result.ok && result.text.length > 1) {
-        // Transcription succeeded
-        setText(result.text);
-        setMood(detectMood(result.text));
-        setStep('preview');
-      } else if (result.error === 'no_api_key') {
-        // No API key — let user type manually
-        setText('');
-        setStep('preview');
-        setErr('Add a Groq API key in src/utils/transcribe.js for auto-transcription. For now, type what you said.');
-      } else {
-        // Transcription failed — let user type
-        setText('');
-        setStep('preview');
-        setErr('Could not auto-transcribe. Please type what you recorded.');
-      }
+      // Transcription temporarily bypassed.
+      // Set a default text so the post can be released immediately with just the audio.
+      setText('🎙️ Voice Note');
+      setMood('EXHAUSTION'); // Default mood or we could try detectMood('🎙️ Voice Note')
+      setStep('preview');
 
     } catch (e) {
       setTranscribing(false);

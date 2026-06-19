@@ -4,6 +4,8 @@
 // Sign up free at: console.groq.com
 // Same API format as OpenAI Whisper
 
+import * as FileSystem from 'expo-file-system';
+
 const GROQ_API_KEY = ''; // <-- paste your Groq API key here
 const GROQ_URL = 'https://api.groq.com/openai/v1/audio/transcriptions';
 
@@ -20,32 +22,27 @@ export async function transcribeAudio(uri, language = 'en') {
   }
 
   try {
-    // Build multipart form data
-    const formData = new FormData();
-    formData.append('file', {
-      uri,
-      type: 'audio/m4a',
-      name: 'recording.m4a',
-    });
-    formData.append('model', 'whisper-large-v3');
-    formData.append('language', language === 'hi-IN' ? 'hi' : 'en');
-    formData.append('response_format', 'json');
-
-    const res = await fetch(GROQ_URL, {
-      method: 'POST',
+    // Use expo-file-system instead of fetch for reliable FormData uploads on Android
+    const res = await FileSystem.uploadAsync(GROQ_URL, uri, {
+      httpMethod: 'POST',
+      uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+      fieldName: 'file',
+      mimeType: 'audio/m4a',
+      parameters: {
+        model: 'whisper-large-v3',
+        language: language === 'hi-IN' ? 'hi' : 'en',
+        response_format: 'json',
+      },
       headers: {
         'Authorization': `Bearer ${GROQ_API_KEY}`,
-        // Don't set Content-Type - fetch sets it automatically with boundary
       },
-      body: formData,
     });
 
-    if (!res.ok) {
-      const err = await res.text();
-      return { ok: false, text: '', error: err };
+    if (res.status !== 200) {
+      return { ok: false, text: '', error: res.body };
     }
 
-    const data = await res.json();
+    const data = JSON.parse(res.body);
     return { ok: true, text: data.text?.trim() || '' };
   } catch (e) {
     return { ok: false, text: '', error: e.message };
